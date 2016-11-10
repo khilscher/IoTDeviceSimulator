@@ -22,7 +22,7 @@ namespace IoTDeviceSimulator
             while (true)
             {
 
-                SendD2CObjectMessageAsync();
+                SendD2CMessageAsync();
 
                 Thread.Sleep(10000);
 
@@ -30,7 +30,7 @@ namespace IoTDeviceSimulator
 
         }
 
-        private static async void SendD2CObjectMessageAsync()
+        private static async void SendD2CMessageAsync()
         {
             Random rnd = new Random();
 
