@@ -10,6 +10,8 @@ namespace IoTDeviceSimulator
     {
         static void Main(string[] args)
         {
+
+
         }
     }
 }
