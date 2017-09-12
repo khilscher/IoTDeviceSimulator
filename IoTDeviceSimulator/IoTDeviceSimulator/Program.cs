@@ -18,7 +18,7 @@ namespace IoTDeviceSimulator
         //Obtain the device's connection string from Device Explorer and paste it here.
         //Sample:
         //static string deviceConnString = $"HostName=yourIoThub.azure-devices.net;DeviceId={deviceId};SharedAccessKey=0mNwS92zxxUOSP/gPgan7Sjnbkjh879875Ce9371jG0=";
-        static string deviceConnString = "<insert device connection string from Device Explorer>";
+        static string deviceConnString = "HostName=KHIoTHub.azure-devices.net;DeviceId=Device1;SharedAccessKey=0mNwS92zxxUOSP/gPgan7S1bh0gn88umm5Ce9371jG0=";
 
         static void Main(string[] args)
         {
@@ -37,7 +37,7 @@ namespace IoTDeviceSimulator
 
         }
 
-        private static async void SendD2CMessageAsync()
+        private static async Task SendD2CMessageAsync()
         {
 
             while (true)
@@ -45,9 +45,11 @@ namespace IoTDeviceSimulator
 
                 Random rnd = new Random();
 
-                double temp = rnd.Next(8, 40);
+                double temp = rnd.Next(28, 30); //Celcius
 
-                double speed = rnd.Next(80, 120);
+                double flow = rnd.Next(200, 210); //Cubic meters per second
+
+                double pressure = rnd.Next(110, 120); //PSI
 
                 PayloadModel messagePayload = new PayloadModel();
 
@@ -55,9 +57,11 @@ namespace IoTDeviceSimulator
 
                 messagePayload.sampleDateTimeUtc = DateTime.UtcNow;
 
-                messagePayload.speed = speed;
+                messagePayload.flow = flow;
 
                 messagePayload.temp = temp;
+
+                messagePayload.pressure = pressure;
 
                 var messagePayloadInJson = JsonConvert.SerializeObject(messagePayload);
 
@@ -82,7 +86,9 @@ namespace IoTDeviceSimulator
 
             public double temp { get; set; }
 
-            public double speed { get; set; }
+            public double flow { get; set; }
+
+            public double pressure { get; set; }
 
         }
 
