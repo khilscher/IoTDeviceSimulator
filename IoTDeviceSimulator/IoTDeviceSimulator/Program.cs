@@ -12,20 +12,27 @@ namespace IoTDeviceSimulator
     {
         static DeviceClient deviceClient;
 
-        //Simulated device name. Register this name in IoT Hub using Device Explorer.
-        static string deviceId = "Device1";
-
         //Obtain the device's connection string from Device Explorer and paste it here.
         //Sample:
         //static string deviceConnString = $"HostName=yourIoThub.azure-devices.net;DeviceId={deviceId};SharedAccessKey=0mNwS92zxxUOSP/gPgan7Sjnbkjh879875Ce9371jG0=";
-        static string deviceConnString = "HostName=KHIoTHub.azure-devices.net;DeviceId=Device1;SharedAccessKey=0mNwS92zxxUOSP/gPgan7S1bh0gn88umm5Ce9371jG0=";
+        static string deviceConnString = "";
 
         static void Main(string[] args)
         {
 
             deviceClient = DeviceClient.CreateFromConnectionString(deviceConnString, TransportType.Amqp); //Can also use MQTT or HTTP
 
-            SendD2CMessageAsync();
+            SendD2CMessageAsync("NGTK2111_vol", "500001", 2200, 2205, "m3");
+            SendD2CMessageAsync("NGTK2111_temp", "500002", 64.4, 65.3, "f");
+            SendD2CMessageAsync("NGTK2111_pressure", "500003", 2800, 2801, "psi");
+
+            SendD2CMessageAsync("NGTK2112_vol", "500004", 1803.4, 1803.6, "m3");
+            SendD2CMessageAsync("NGTK2112_temp", "500005", 65.1, 65.3, "f");
+            SendD2CMessageAsync("NGTK2111_pressure", "500006", 2830, 2831, "psi");
+
+            SendD2CMessageAsync("CRTK8113_vol", "600001", 1603.1, 1603.6, "m3");
+            SendD2CMessageAsync("CRTK8114_vol", "600002", 1107.1, 1107.7, "m3");
+
 
             Console.WriteLine("Press any key to stop...");
 
@@ -37,7 +44,7 @@ namespace IoTDeviceSimulator
 
         }
 
-        private static async Task SendD2CMessageAsync()
+        private static async Task SendD2CMessageAsync(string displayName, string address, double low, double high, string engUnit)
         {
 
             while (true)
@@ -45,23 +52,19 @@ namespace IoTDeviceSimulator
 
                 Random rnd = new Random();
 
-                double temp = rnd.Next(28, 30); //Celcius
-
-                double flow = rnd.Next(200, 210); //Cubic meters per second
-
-                double pressure = rnd.Next(110, 120); //PSI
+                double value = rnd.NextDouble() * (high-low) + low;
 
                 PayloadModel messagePayload = new PayloadModel();
 
-                messagePayload.deviceId = deviceId;
+                messagePayload.DisplayName = displayName;
 
-                messagePayload.sampleDateTimeUtc = DateTime.UtcNow;
+                messagePayload.Address = address;
 
-                messagePayload.flow = flow;
+                messagePayload.Value = Math.Round(value, 2);
 
-                messagePayload.temp = temp;
+                messagePayload.EngUnit = engUnit;
 
-                messagePayload.pressure = pressure;
+                messagePayload.SourceTimestamp = DateTime.UtcNow;
 
                 var messagePayloadInJson = JsonConvert.SerializeObject(messagePayload);
 
@@ -71,7 +74,7 @@ namespace IoTDeviceSimulator
 
                 Console.WriteLine($"Message sent: {messagePayloadInJson}");
 
-                Task.Delay(5000).Wait(); //Send message every 5 seconds
+                Task.Delay(60000).Wait(); //Send message every 5 seconds
 
             }
 
@@ -80,15 +83,15 @@ namespace IoTDeviceSimulator
         private class PayloadModel
         {
 
-            public string deviceId { get; set; }
+            public string DisplayName { get; set; }
 
-            public DateTime sampleDateTimeUtc { get; set; }
+            public string Address { get; set; }
 
-            public double temp { get; set; }
+            public double Value { get; set; }
 
-            public double flow { get; set; }
+            public string EngUnit { get; set; }
 
-            public double pressure { get; set; }
+            public DateTime SourceTimestamp { get; set; }
 
         }
 
